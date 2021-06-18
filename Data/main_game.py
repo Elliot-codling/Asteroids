@@ -39,7 +39,7 @@ display_sprite =[]      #define the array for sprites, including the player
 sprite = pygame.image.load("{}/Textures/spaceship.png".format(file_dir))
 enemy_rock = pygame.image.load("{}/Textures/rock_brown.png".format(file_dir))
 enemy_rock = pygame.transform.scale(enemy_rock, (80, 80))
-#sprite = sprite.convert()          #do not use, removes transparency
+#enemy_rock = enemy_rock.convert()          #do not use, removes transparency
 
 #forground
 #score
@@ -83,19 +83,21 @@ for _ in range(11):
 #-----------------------------------------------------------
 
 
-#player startup -----------------------
-#all of these coords are for top left of player
-player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
-player_screeny = 500      #define player screen y coords
-player_x = ((w / 2) - 96) + 76       #define player x coords
-player_y = 518        #define player y coords
-vel = 6     #define player velocity
-display_sprite += [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
+# player startup ----------------------------------------------------------------
+def reset_player():
+    global player_screenx, player_screeny, player_x, player_y, player_width, player_height, vel, display_sprite
+    player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
+    player_screeny = 500      #define player screen y coords
+    player_x = ((w / 2) - 96) + 80       #define player x coords
+    player_y = 518        #define player y coords
+    vel = 6     #define player velocity
+    display_sprite = [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
 
-#create new collision detection
-player_width = 40
-player_height = 32 
-# --------------------------------------
+    #create new collision detection
+    player_width = 36
+    player_height = 24 
+reset_player()
+# --------------------------------------------------------------------------------
 
 
 # main menu ---------------------------------------------------------------------------------
@@ -234,7 +236,7 @@ def game_over():
     text_foreground.insert(1, (lost, [text_rect[0], text_rect[1]]))         #add the game over text to the text_foreground          
     
     update(display, display_sprite, foreground, text_foreground, clock)     #update the screen to show the "You Lost!"
-    delay(1000)             #stop the game for 1.5 secs
+    delay(500)             #stop the game for 0.5 secs
 
     del text_foreground[1]              #remve the "You Lost!"
     game_engine.music.fade_out(volume, 0, 0.1)           #fade the music
@@ -332,16 +334,7 @@ def main_game():
             frame_wait = 120            #frame wait to default setting
             sprite_speed = 2            #set the default speed of rocks
 
-            player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
-            player_screeny = 500      #define player screen y coords
-            player_x = ((w / 2) - 96) + 76       #define player x coords
-            player_y = 518        #define player y coords
-            vel = 6     #define player velocity
-            display_sprite = [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
-
-            #create new collision detection
-            player_width = 40
-            player_height = 32 
+            reset_player()
             
             if score > high_score:                  #high score system
                 high_score_array = [score]             #add score to the array
@@ -399,6 +392,8 @@ def music():                #create the function
             pygame.mixer.music.load("{}/Music/gameplay.ogg".format(file_dir))
             pygame.mixer.music.play(-1)
 # -------------------------------------------------------------------------------
+
+
 
 #main game loop --------------------------------------------
 run = True
