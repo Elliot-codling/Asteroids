@@ -85,18 +85,16 @@ for _ in range(11):
 
 #player startup -----------------------
 #all of these coords are for top left of player
-player_screenx = 240 - 96 / 2      #define player screen x coords 
+player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
 player_screeny = 500      #define player screen y coords
-player_x = 240 - 96 / 2 + 28        #define player x coords
-player_y = 520        #define player y coords
+player_x = ((w / 2) - 96) + 76       #define player x coords
+player_y = 518        #define player y coords
 vel = 6     #define player velocity
 display_sprite += [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
 
-#create custom player hitbox, for bottom right coord
-player_screenx_2 = 240 - 96 / 2 + 96
-player_screeny_2 = 596
-player_x_2 = 240 - 96 / 2 + 65
-player_y_2 = 545
+#create new collision detection
+player_width = 40
+player_height = 32 
 # --------------------------------------
 
 
@@ -245,7 +243,7 @@ def game_over():
 
 
 def main_game():
-    global player_screenx, player_screeny, player_screenx_2, player_screeny_2, player_x, player_y, player_x_2, player_y_2, vel              #importing player variables
+    global player_screenx, player_screeny, player_screenx_2, player_screeny_2, player_x, player_y, player_x_2, player_y_2, player_width, player_height, vel              #importing player variables
     global display_sprite, display, foreground, text_foreground              #globalise all screen arrays
     global background_stars, enemy_rock                    #globalise texture variables
     global score, high_score                     #scoring system
@@ -253,21 +251,21 @@ def main_game():
 
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         # set out the players screen coords, as well as its x and y coords, including velocity
-        player_screenx, player_x, player_screenx_2, player_x_2 = game_engine.player.left(player_screenx, player_screenx_2, player_x, player_x_2, vel)
+        player_screenx, player_x = game_engine.player.left(player_screenx, player_x, vel)
         display_sprite[0][1][0] = player_screenx
 
     elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        player_screenx, player_x, player_screenx_2, player_x_2 = game_engine.player.right(player_screenx, player_screenx_2, player_x, player_x_2, vel)
+        player_screenx, player_x = game_engine.player.right(player_screenx, player_x, vel)
         display_sprite[0][1][0] = player_screenx
 
     #this part is not needed for this program however is here if needed
     """
     if keys[pygame.K_w] or keys[pygame.K_UP]:
-        player_screeny, player_y, player_screeny_2, player_y_2 = game_engine.player.up(player_screeny, player_screeny_2, player_y, player_y_2, vel)
+        player_screeny, player_y = game_engine.player.up(player_screeny, player_y, vel)
         display_sprite[0][1][1] = player_screeny
 
     elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        player_screeny, player_y, player_screeny_2, player_y_2 = game_engine.player.down(player_screeny, player_screeny_2, player_y, player_y_2, vel)
+        player_screeny, player_y = game_engine.player.down(player_screeny, player_y, vel)
         display_sprite[0][1][1] = player_screeny
     """
 
@@ -316,6 +314,7 @@ def main_game():
             enemy_rock = pygame.transform.flip(enemy_rock, horizontal, vertical)
             display_sprite.insert(v + 1, (enemy_rock, [x, -90]))          #add new rock to display_sprite
             x += 90             #add the x coord by 90
+            
 
         random_num = randint(1, 5)
         del display_sprite[random_num]
@@ -329,22 +328,20 @@ def main_game():
   
     #check to see if the player has collided with any rocks
     for v in range(1, length):
-        if display_sprite[v][1][0] + 80 >= player_x and display_sprite[v][1][0] <= player_x_2 and display_sprite[v][1][1] + 80 >= player_y and display_sprite[v][1][1] <= player_y_2:           #check if the current sprite is inbetween the coords of the player
-            #this entire section of code resets most of the data so that the game to reset as normal
-            player_screenx = 240 - 96 / 2      #define player screen x coords 
-            player_screeny = 500      #define player screen y coords
-            player_x = 240 - 96 / 2 + 28        #define player x coords
-            player_y = 520        #define player y coords
-            frame_wait = 120
-            sprite_speed = 2    
+        if player_x <= display_sprite[v][1][0] + 80 and player_x + player_width >= display_sprite[v][1][0] and player_y <= display_sprite[v][1][1] + 80 and player_y + player_height >= display_sprite[v][1][1]:
+            frame_wait = 120            #frame wait to default setting
+            sprite_speed = 2            #set the default speed of rocks
 
-            #create custom player hitbox, for bottom right coord
-            player_screenx_2 = 240 - 96 / 2 + 96
-            player_screeny_2 = 596
-            player_x_2 = 240 - 96 / 2 + 65
-            player_y_2 = 545
-            
+            player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
+            player_screeny = 500      #define player screen y coords
+            player_x = ((w / 2) - 96) + 76       #define player x coords
+            player_y = 518        #define player y coords
+            vel = 6     #define player velocity
             display_sprite = [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
+
+            #create new collision detection
+            player_width = 40
+            player_height = 32 
             
             if score > high_score:                  #high score system
                 high_score_array = [score]             #add score to the array
@@ -354,6 +351,7 @@ def main_game():
             add_score(0)
             game_over()
             break                   #break out of this loop
+            
         else:
             display_sprite[v][1][1] += sprite_speed            #move the enimies by the sprite speed
  
@@ -371,7 +369,7 @@ def main_game():
     if score == 10:             #level 1 when score == 10
         add_score(5)              #give  player 5 points for getting 10 points
         sprite_speed = 4            #increase rock speed by 4
-        frame_wait = 80             #create rocks every 90 frames
+        frame_wait = 80             #create rocks every 80 frames
         
         font = pygame.font.SysFont(None, 100)        #inisilise the font
         level = font.render("2X Speed!", True, pygame.Color("WHITE"))        #render the image for the text, 
@@ -428,7 +426,7 @@ while run:
 
 
         # update screen ----------------------------------------
-        #game_engine.update.debug(True, player_x, player_x_2, player_y, player_y_2)
+        #game_engine.update.debug(True, player_x, player_y, player_width, player_height)
         update(display, display_sprite, foreground, text_foreground, clock)     #update the window
         clock.tick(60)  #limit to 60 fps
 

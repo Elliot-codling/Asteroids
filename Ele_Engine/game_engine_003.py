@@ -72,15 +72,15 @@ class update():
         print("FPS: {}".format(fps))
         pygame.time.delay(100)              #stop game for 0.1 seconds
 
-    def debug(debug, x1, x2, y, y2):            #state if debug needs to be activated, give player x and y coords
+    def debug(debug, x, y, width, height):            #state if debug needs to be activated, give player x and y coords
         global debug_state
         debug_state = debug
 
-        global player_x, player_x_2, player_y, player_y_2
-        player_x = x1               #top left x coords
-        player_x_2 = x2             #bottom right x coord
-        player_y = y                #top left y coord
-        player_y_2 = y2             #bottom right y coord
+        global player_x, player_y, player_width, player_height
+        player_x = x               #top left x coords
+        player_y = y             #bottom right x coord
+        player_width = width               #top left y coord
+        player_height = height             #bottom right y coord
 
     def define(name, w, h):             #define the window
         global window                   #need to globalise to update            
@@ -157,7 +157,7 @@ class update():
         #debug
         if debug_state == True:
             color = (255, 255, 0)
-            pygame.draw.rect(window, color, pygame.Rect(player_x, player_y, player_x_2 - player_x, player_y_2 - player_y))          
+            pygame.draw.rect(window, color, pygame.Rect(player_x, player_y, player_width, player_height))          
             #create the debug rectangle to show where the hitbox is on sprites
         
             fps = int(clock.get_fps())
@@ -169,49 +169,41 @@ class update():
         pygame.display.update()     #only update the screen at this time
 
 class player():
-    def left(player_screenx, player_screenx_2, player_x, player_x_2, vel):
+    def left(player_screenx, player_x, vel):
         #stop the players screen x coord if it gets too close to the left border
         #return the values of the player's x coord and the players screen x coord 
         if player_screenx > left_border:
             player_screenx -= vel
-            player_screenx_2 -= vel
             player_x -= vel
-            player_x_2 -= vel
 
-        return player_screenx, player_x, player_screenx_2, player_x_2
+        return player_screenx, player_x
 
-    def right(player_screenx, player_screenx_2, player_x, player_x_2, vel):
+    def right(player_screenx, player_x, vel):
         #stop the players screen x coord if it gets too close to the right border
         #return the values of the player's x coord and the players screen x coord 
         if player_screenx < right_border:
             player_screenx += vel
-            player_screenx_2 += vel
             player_x += vel
-            player_x_2 += vel
 
-        return player_screenx, player_x, player_screenx_2, player_x_2
+        return player_screenx, player_x
 
-    def up(player_screeny, player_screeny_2, player_y, player_y_2, vel):
+    def up(player_screeny, player_y, vel):
         #stop the player screen y coord if it gets too close to the top border
         #return the values of the players x coord and the players screen x coord
         if player_screeny > top_border:
             player_screeny -= vel
-            player_screeny_2 -= vel
             player_y -= vel
-            player_y_2 -= vel
 
-        return player_screeny, player_y, player_screeny_2, player_y_2
+        return player_screeny, player_y
 
-    def down(player_screeny, player_screeny_2, player_y, player_y_2, vel):
+    def down(player_screeny, player_y, vel):
         #stop the player screen y coord if it gets too close to the bottom border
         #return the values of the players x coord and the players screen x coord
         if player_screeny < bottom_border:
             player_screeny += vel
-            player_screeny_2 += vel
             player_y += vel
-            player_y_2 += vel
 
-        return player_screeny, player_y, player_screeny_2, player_y_2
+        return player_screeny, player_y
 
     #define the left border of the screen to stop moving
     def left_border(x):
