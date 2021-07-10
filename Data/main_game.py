@@ -1,6 +1,4 @@
-#main game
 #GAME CREATED BY ELLIOT CODLING
-
 
 import os, time   #import os
 from Ele_Engine import game_engine_003 as game_engine     #import custom game engine
@@ -65,7 +63,6 @@ volume = 1          #set the volume level
 menu_start = True           #display the start / home menu
 options = False             #when to show options menu instead of other menus / sub menus
 
-
 #creating background
 x = 0
 y = -60
@@ -82,23 +79,21 @@ for _ in range(11):
 
 #-----------------------------------------------------------
 
-
 # player startup ----------------------------------------------------------------
 def reset_player():
-    global player_screenx, player_screeny, player_x, player_y, player_width, player_height, vel, display_sprite
-    player_screenx = ((w / 2) - 96) + 50      #define player screen x coords 
+    global player_screenx, player_screeny, player_x, player_y, player_width, player_height, vel, display_sprite         #globalise the player pos
+    player_screenx = ((w / 2) - 96) + 48   #define player screen x coords 
     player_screeny = 500      #define player screen y coords
-    player_x = ((w / 2) - 96) + 80       #define player x coords
+    player_x = ((w / 2) - 96) + 78       #define player x coords
     player_y = 518        #define player y coords
     vel = 6     #define player velocity
     display_sprite = [(sprite, [player_screenx, player_screeny])]      #put player in display array for rendering
 
     #create new collision detection
-    player_width = 36
-    player_height = 24 
+    player_width = 36           #width
+    player_height = 24          #height
 reset_player()
 # --------------------------------------------------------------------------------
-
 
 # main menu ---------------------------------------------------------------------------------
 def main_menu():
@@ -107,7 +102,7 @@ def main_menu():
     mx, my = pygame.mouse.get_pos()                 #get mouse pos
     click = False
     
-    if pygame.mouse.get_pressed()[0]:
+    if pygame.mouse.get_pressed()[0]:               #check if left mouse button is clicked
         click = True
 
     if click == True:               #check if mouse left button is pressed
@@ -166,7 +161,7 @@ def main_menu():
 
 # --------------------------------------------------------------------------------------------
 
-# main code ------------------------------------------------------------------------------------
+# sub code ------------------------------------------------------------------------------------
 def reset_options(text_foreground):
     #used so that the submenu options can be redrawn so that music can change on screen
     global font  
@@ -240,16 +235,18 @@ def game_over():
 
     del text_foreground[1]              #remve the "You Lost!"
     game_engine.music.fade_out(volume, 0, 0.1)           #fade the music
-    reset_screen(text_foreground)                   #reset the screen
+    reset_screen(text_foreground)                   #reset the screen to the title
     gameplay = False                    #stop playing the game
+# ------------------------------------------------------------------------------------------------------------------------------------------------
 
+# main game code loop ------------------------------------------------------------------------------------------------------------------------------
 
-def main_game():
-    global player_screenx, player_screeny, player_screenx_2, player_screeny_2, player_x, player_y, player_x_2, player_y_2, player_width, player_height, vel              #importing player variables
+def main_game():                    
+    global player_screenx, player_screeny, player_x, player_y, player_width, player_height, vel              #importing player variables
     global display_sprite, display, foreground, text_foreground              #globalise all screen arrays
     global background_stars, enemy_rock                    #globalise texture variables
     global score, high_score                     #scoring system
-    global  frames, sprite_speed, frame_wait, gameplay               #other stuff
+    global  frames, sprite_speed, frame_wait               #other stuff
 
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         # set out the players screen coords, as well as its x and y coords, including velocity
@@ -269,14 +266,12 @@ def main_game():
     elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
         player_screeny, player_y = game_engine.player.down(player_screeny, player_y, vel)
         display_sprite[0][1][1] = player_screeny
-    """
 
     #debug
-    """
     if keys[pygame.K_b]:
-        game_engine.update.list_debug(display, display_sprite, foreground, text_foreground, clock)   
+        game_engine.update.list_debug(display, display_sprite, foreground, text_foreground, clock)
     """
-
+    
     #create scrolling background
     length = len(display)       #find the length of the display array to find how many textures there are to change
     length = int(length)        #turn the str into int
@@ -285,7 +280,7 @@ def main_game():
     for v in range(length):
         #find the coords
         #create new img when index 0, y == 0
-        if display[0][1][1] == 0:
+        if display[0][1][1] >= 0:
             #print(True)
             x = 0
             y = -60             #create at y = -60, prevent 'jittering'
@@ -304,7 +299,6 @@ def main_game():
         else:
             display[v][1][1] += 1           #how much the background moves 
 
-
     #when to spawn new enemy at the top of the screen
     frames += 1                     #add frames by 1
     if frames >= frame_wait:               #wait for frames to be bigger than frame_wait
@@ -322,32 +316,34 @@ def main_game():
         del display_sprite[random_num]
         frames = 0                  #reset frame variable
 
-
     #create enemy sprites on the screen in the display_sprite array
     length = len(display_sprite)
     length = int(length)
-
   
     #check to see if the player has collided with any rocks
     for v in range(1, length):
-        if player_x <= display_sprite[v][1][0] + 80 and player_x + player_width >= display_sprite[v][1][0] and player_y <= display_sprite[v][1][1] + 80 and player_y + player_height >= display_sprite[v][1][1]:
+        collided_image = game_engine.player.collisions(player_x, player_y, player_width, player_height, display_sprite, v)
+        collided_image = str(collided_image)            #change the collision to str
+        enemy_rock_str = enemy_rock             #create new variable
+        enemy_rock_str = str(enemy_rock_str)            #change to str
+        if collided_image == enemy_rock_str:            #check if collided image is the enemy rock
             frame_wait = 120            #frame wait to default setting
             sprite_speed = 2            #set the default speed of rocks
 
-            reset_player()
+            
             
             if score > high_score:                  #high score system
                 high_score_array = [score]             #add score to the array
                 high_score = high_score_array[0]                #make the high score == to the high score array
-    
+
             score = 0               #score is 0
             add_score(0)
             game_over()
-            break                   #break out of this loop
-            
+            reset_player()
+            break
+
         else:
-            display_sprite[v][1][1] += sprite_speed            #move the enimies by the sprite speed
- 
+            display_sprite[v][1][1] += sprite_speed         #move the sprites by the sprite speed
 
     #check to see if the rocks are below the y value 700, this is to delete them and add score to player score
     for v in range(1, length):
@@ -358,6 +354,7 @@ def main_game():
             del display_sprite[length - 1]                  #delete that sprite
             add_score(0.25)                     #add this per rock (4 rocks each, 4 * 0.25 = 1)
 
+    
     #levels
     if score == 10:             #level 1 when score == 10
         add_score(5)              #give  player 5 points for getting 10 points
@@ -373,6 +370,7 @@ def main_game():
         update(display, display_sprite, foreground, text_foreground, clock)
         delay(2000)
         del text_foreground[1]
+    
     
 # -------------------------------------------------------
 
@@ -393,14 +391,11 @@ def music():                #create the function
             pygame.mixer.music.play(-1)
 # -------------------------------------------------------------------------------
 
-
-
 #main game loop --------------------------------------------
 run = True
 start_button, options_button, exit_button = reset_screen(text_foreground)
 while run:
     try:
-
         # keyboard and exit button, main code -----------------------------
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -418,7 +413,6 @@ while run:
         if keys[pygame.K_ESCAPE]:
             run = False
         # ---------------------------------------------------------
-
 
         # update screen ----------------------------------------
         #game_engine.update.debug(True, player_x, player_y, player_width, player_height)

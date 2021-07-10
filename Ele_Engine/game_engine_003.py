@@ -169,6 +169,18 @@ class update():
         pygame.display.update()     #only update the screen at this time
 
 class player():
+    def collisions(player_x, player_y, player_width, player_height, image_list, v):     #get the player pos, the collision list and the index to check if collided
+        image = image_list[v][0]            #specify the image
+        image_width = image.get_size()[0]       #x
+        image_height = image.get_size()[1]      #y
+
+        image_collided = None         #return nothing
+        if player_x <= image_list[v][1][0] + image_width and player_x + player_width >= image_list[v][1][0] and player_y <= image_list[v][1][1] + image_height and player_y + player_height >= image_list[v][1][1]:
+            image_collided = image_list[v][0]  #return the image that was collided with      
+
+        return image_collided
+
+    
     def left(player_screenx, player_x, vel):
         #stop the players screen x coord if it gets too close to the left border
         #return the values of the player's x coord and the players screen x coord 
