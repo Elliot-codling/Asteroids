@@ -166,9 +166,6 @@ def main_menu():
 
 # --------------------------------------------------------------------------------------------
 
-#Hello this is a test from my samsung tablet!
-print("Hello world! I am speaking from Android!")
-
 # main code ------------------------------------------------------------------------------------
 def reset_options(text_foreground):
     #used so that the submenu options can be redrawn so that music can change on screen
