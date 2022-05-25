@@ -7,7 +7,7 @@ from Ele_Engine import game_engine_003 as game_engine     #import custom game en
 from random import randint      #import random
 try:
     import pygame   #import pygame
-except:
+except ModuleNotFoundError:
     game_engine.update.pygame_debug()
 
 pygame.font.init()      #initilise the font,
@@ -249,7 +249,7 @@ def main_game():
     global display_sprite, display, foreground, text_foreground              #globalise all screen arrays
     global background_stars, enemy_rock                    #globalise texture variables
     global score, high_score                     #scoring system
-    global  frames, sprite_speed, frame_wait, gameplay               #other stuff
+    global frames, sprite_speed, frame_wait, gameplay               #other stuff
 
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         # set out the players screen coords, as well as its x and y coords, including velocity
@@ -428,7 +428,7 @@ while run:
         #--------------------------------------------------------
 
     except FileNotFoundError:      #stop code if there is an error with pygame
-        run  = False
+        run = False
         #pygame.error
 
 # --------------------------------------
