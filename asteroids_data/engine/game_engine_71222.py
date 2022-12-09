@@ -44,17 +44,24 @@ class properties_object:            #this is to define the properties of a sprit
 #updates text
 class properties_text:          #this is to define properties of text
 
-    def __init__(self, name, text, color, x, y, font_size):
+    def __init__(self, name, text, color, x, y, font_size, snapCentre = False):
         self.name = name
         self.text = text
-        self.x = x
-        self.y = y
+        
         self.font_size = font_size
         self.color = color
+        self.snapCentre = snapCentre
         
 
         font = pygame.font.SysFont(None, font_size)
         texture = font.render(text, True, pygame.Color(color))
+        if snapCentre == True:
+            centre_coords = texture.get_rect(center=(x/2, y/2))
+            self.x = centre_coords[0]
+            self.y = centre_coords[1]
+        else:
+            self.x = x
+            self.y = y
         self.texture = texture
 
 class mouse():
@@ -237,10 +244,21 @@ class window:
         pygame.display.update()     #only update the screen at this time
 
 class player:
-    def collisions(player_x, player_y, player_width, player_height, list, index):     #get the player pos, the collision list and the index to check if collided
-        if player_x <= list[index].x and player_x + player_width >= list[index].x + list[index].width:      #check for x coord if collied with player
-            if player_y <= list[index].y and player_y + player_height >= list[index].y + list[index].height:    #check for y coord if collied with player
-                return list[index].name
+    def collisions(player, box_list, index):     #get the player pos, the collision list and the index to check if collided
+        #check to see if its within the x coord position
+        if not player.x + player.width >= box_list[index].x:
+            return None
+        elif not player.x <= box_list[index].x + box_list[index].width:
+            return None
+        elif not player.y + player.height >= box_list[index].y:
+            return None
+        elif not player.y <= box_list[index].y + box_list[index].height:
+            return None
+        else:
+            #collision has occured
+            return box_list[index].name
+
+        
 
     
     def left(player, vel, border):
