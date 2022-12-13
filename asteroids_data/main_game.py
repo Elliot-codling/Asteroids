@@ -1,7 +1,7 @@
 #main asteroids game
 #GAME CREATED BY ELLIOT CODLING
-import os, time
-from engine import game_engine_91222 as game_engine
+import os
+from engine import game_engine_131222 as game_engine
 from random import randint
 
 try:
@@ -24,7 +24,7 @@ run_game = False
 clock = pygame.time.Clock()
 vel = 6
 frames = 0
-frames_wait = 130
+frames_wait = 145
 sprite_speed = 2
 score = 0
 high_score = 0
@@ -32,6 +32,10 @@ enable_collisions = True
 volume = 10
 performance_mode = False
 
+#load in textures
+global background_stars_texture, rock_texture
+background_stars_texture = pygame.image.load("{}/textures/background-stars.png".format(file_dir))
+rock_texture = pygame.image.load("{}/textures/rock_brown.png".format(file_dir))
 #display
 display = []
 #create background of stars
@@ -42,7 +46,7 @@ for _ in range(11):
         horizontal = randint(0, 1)
         vertical = randint(0, 0)
         
-        background_stars = game_engine.properties_object("background_stars_{}{}".format(x, y), "{}/textures/background-stars.png".format(file_dir), x, y, 80, 60, False)
+        background_stars = game_engine.properties_object("background_stars_{}{}".format(x, y), background_stars_texture, x, y, 80, 60, False)
         #flip the background image
         background_texture_new = pygame.transform.flip(background_stars.texture, horizontal, vertical)
         background_stars.texture = background_texture_new
@@ -146,7 +150,7 @@ def create_rocks():
         horizontal = randint(0, 1)
         vertical = randint(0, 0)
         
-        rock = game_engine.properties_object("rock_{}{}".format(x, y), "{}/textures/rock_brown.png".format(file_dir), x, y, 80, 80, not performance_mode)
+        rock = game_engine.properties_object("rock_{}{}".format(x, y), rock_texture, x, y, 80, 80, not performance_mode)
         #flip the background image
         rock_texture_new = pygame.transform.flip(rock.texture, horizontal, vertical)
         rock.texture = rock_texture_new
@@ -173,7 +177,7 @@ def game_over():
     #reset everything
     text_foreground = []
     display_sprite = []
-    score, frames, frame_wait, sprite_speed = 0, 0, 130, 2
+    score, frames, frame_wait, sprite_speed = 0, 0, 145, 2
     reset_player()
     create_rocks()  
     update_score()
@@ -202,10 +206,10 @@ def play_music():
         pass
     else:
         if run_game == False:
-            pygame.mixer.music.load("{}/Music/menu_start.ogg".format(file_dir))
+            pygame.mixer.music.load("{}/music/menu_start.ogg".format(file_dir))
             pygame.mixer.music.play(-1)
         else:
-            pygame.mixer.music.load("{}/Music/gameplay.ogg".format(file_dir))
+            pygame.mixer.music.load("{}/music/gameplay.ogg".format(file_dir))
             pygame.mixer.music.play(-1)
 
 #main code --------------------------------------------------------------------------------
@@ -226,13 +230,13 @@ def gameplay():
                 horizontal = randint(0, 1)
                 vertical = randint(0, 0)
                 
-                background_stars = game_engine.properties_object("background_stars_{}{}".format(x, y), "{}/textures/background-stars.png".format(file_dir), x, y, 80, 60, not performance_mode)
+                background_stars = game_engine.properties_object("background_star", background_stars_texture, x, y, 80, 60, performance_mode)
                 #flip the background image
                 background_texture_new = pygame.transform.flip(background_stars.texture, horizontal, vertical)
                 background_stars.texture = background_texture_new
                 
                 display.insert(index, (background_stars))
-                del display[len(display) - 1]
+                del display[66]
                 x += 80   
         else:
             image.y += 1
@@ -252,7 +256,6 @@ def gameplay():
         update_score()
 
     #move the rocks
-    
     for index in range(1, len(display_sprite)):
         display_sprite[index].y += sprite_speed
     
@@ -266,13 +269,14 @@ def gameplay():
         score += 5
         del text_foreground[0]
         update_score()
-        sprite_speed, frames_wait = 4, 80
+        sprite_speed, frames_wait, frames = 4, 90, 0
         level_text = game_engine.properties_text("level", "2X Speed!", "YELLOW", w, h, 100, True)
         text_foreground += [level_text]
         update(window, display, display_sprite, foreground, text_foreground, clock)
         pygame.time.delay(2000)
         del text_foreground[1]
 
+#initilise the start of the program
 reset_player()          
 create_rocks()  
 update_score()
