@@ -194,7 +194,7 @@ def game_over():
 
 def update_score():
     global text_foreground
-    score_text = game_engine.properties_text("score", "Score: {}    High score: {}".format(score, high_score), "YELLOW", 20, 20, 30)
+    score_text = game_engine.properties_text("score", "Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 20, 20, 30)
     text_foreground += [score_text]
 
 def play_music():
@@ -216,7 +216,7 @@ def gameplay():
         game_engine.player.left(rocket, vel, 10)
     elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         game_engine.player.right(rocket, vel, w - rocket.width - 10)
-        
+    
     #create scrolling background
     for image in display:
         if display[0].y == 0:
@@ -236,7 +236,7 @@ def gameplay():
                 x += 80   
         else:
             image.y += 1
-
+    
     #create new rocks if the amount of frames passed == frames to wait for
     frames += 1
     if frames >= frames_wait:
@@ -247,8 +247,12 @@ def gameplay():
     if display_sprite[len(display_sprite) - 1].y >= 700:
         del display_sprite[len(display_sprite) - 1]
         score += 0.25
+        #update the text_foreground
+        del text_foreground[0]
+        update_score()
 
     #move the rocks
+    
     for index in range(1, len(display_sprite)):
         display_sprite[index].y += sprite_speed
     
@@ -256,11 +260,7 @@ def gameplay():
         if collision != None and enable_collisions == True:
             game_over()
             break   
-        
-    #update the text_foreground
-    del text_foreground[0]
-    update_score()
-
+    
     #levels
     if score == 10:
         score += 5
@@ -292,11 +292,12 @@ while run:
     play_music()
     if run_game:
         gameplay()
+       
     else:
         main_menu()
 
     update(window, display, display_sprite, foreground, text_foreground, clock)
-    clock.tick(60)
+    clock.tick(60)   
 
 pygame.quit()
 print("Quiting...")
