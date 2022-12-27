@@ -13,7 +13,7 @@ pygame.font.init()      #initilise the font
 try:
     pygame.mixer.init()         #initilise music
     activiate_music = True
-except:
+except pygame.error:
     game_engine.window.music_debug()            #if the audio driver hasn't been found
     activiate_music = False
 
