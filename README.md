@@ -17,4 +17,4 @@ REQUIREMENTS:
 
 Planned updates:
 - Will not crash if no audio driver is found
-- Main Menu with music volume settings
+- Animation capabilities
