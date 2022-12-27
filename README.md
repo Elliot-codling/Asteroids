@@ -10,11 +10,9 @@ F to reset the game once you have crashed
 Avoid the asteroids and try to get the top high score!
 
 REQUIREMENTS:
-- Needs an audio device else it will crash
 - Pygame
-- Python  3.4 or newer
+- Python 3.4 or newer
 - Hardware required is a Raspberry Pi 3B or above.
 
 Planned updates:
-- Will not crash if no audio driver is found
 - Animation capabilities
