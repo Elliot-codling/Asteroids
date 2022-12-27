@@ -11,7 +11,7 @@ except ModuleNotFoundError:
 
 pygame.font.init()      #initilise the font
 pygame.mixer.init()         #initilise music
-#DOES NOT WORK WITH PYGAME 2.0 ON RASPBERRY PI 
+
 file_dir = os.getcwd() # get the current directory
 
 #create window -------------------------------------------
@@ -85,18 +85,19 @@ def init_options_menu():
     music_text = game_engine.properties_text("start", "[ Music  level: {} ]".format(volume), "YELLOW", w, h + 80, 45, True)
     volume_down_text = game_engine.properties_text("start", "[ - ]", "YELLOW", w - 60, h + 160, 45, True)
     volume_up_text = game_engine.properties_text("start", "[ + ]", "YELLOW", w + 60, h + 160, 45, True)
+    performance_text = game_engine.properties_text("performance_text", "[ Performance mode: {} ]".format(performance_mode), "YELLOW", w, h + 240, 45, True)
     #create boxes that are invisable
     back_button = game_engine.properties_object("back_button", "{}/textures/invisable_button.png".format(file_dir), back_text.x, back_text.y, back_text.texture.get_width(), back_text.texture.get_height(), not performance_mode)
     volume_down_button = game_engine.properties_object("volume_down_button", "{}/textures/invisable_button.png".format(file_dir), volume_down_text.x, volume_down_text.y, volume_down_text.texture.get_width(), volume_down_text.texture.get_height(), not performance_mode)
     volume_up_button = game_engine.properties_object("volume_up_button", "{}/textures/invisable_button.png".format(file_dir), volume_up_text.x, volume_up_text.y, volume_up_text.texture.get_width(), volume_up_text.texture.get_height(), not performance_mode)
+    performance_button = game_engine.properties_object("performance_button", "{}/textures/invisable_button.png".format(file_dir), performance_text.x, performance_text.y, performance_text.texture.get_width(), performance_text.texture.get_height(), not performance_mode)
     
-    
-    foreground += [back_button, volume_down_button, volume_up_button]
-    text_foreground += [back_text, music_text, volume_down_text, volume_up_text]
+    foreground += [back_button, volume_down_button, volume_up_button, performance_button]
+    text_foreground += [back_text, music_text, volume_down_text, volume_up_text, performance_text]
     
 def main_menu():
-    global foreground, text_foreground
-    global run_game, run, volume
+    global display_sprite, foreground, text_foreground
+    global run_game, run, volume, performance_mode
     pygame.time.delay(100)
     if not pygame.mouse.get_pressed()[0]:
         pass
@@ -139,6 +140,17 @@ def main_menu():
         for _ in range(len(text_foreground) - 1):
             del text_foreground[1]
         init_options_menu()    
+    elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "performance_button", foreground):
+        #flip the variable performance_mode and reset the screen
+        performance_mode = not performance_mode
+        foreground = []
+        for _ in range(len(text_foreground) - 1):
+            del text_foreground[1]
+        init_options_menu()
+
+        display_sprite = []
+        reset_player()
+        create_rocks()
 
 #sub program -----------------------------------------------------------------------
 def create_rocks():
@@ -171,13 +183,13 @@ def reset_player():
 
 def game_over():
     global display_sprite, text_foreground
-    global run_game, score, high_score, frames, frame_wait, sprite_speed
+    global run_game, score, high_score, frames, frames_wait, sprite_speed
     if score > high_score:
         high_score = score
     #reset everything
     text_foreground = []
     display_sprite = []
-    score, frames, frame_wait, sprite_speed = 0, 0, 145, 2
+    score, frames, frames_wait, sprite_speed = 0, 0, 145, 2
     reset_player()
     create_rocks()  
     update_score()
@@ -255,15 +267,6 @@ def gameplay():
         del text_foreground[0]
         update_score()
 
-    #move the rocks
-    for index in range(1, len(display_sprite)):
-        display_sprite[index].y += sprite_speed
-    
-        collision = game_engine.player.collisions(rocket, display_sprite, index)
-        if collision != None and enable_collisions == True:
-            game_over()
-            break   
-    
     #levels
     if score == 10:
         score += 5
@@ -275,6 +278,15 @@ def gameplay():
         update(window, display, display_sprite, foreground, text_foreground, clock)
         pygame.time.delay(2000)
         del text_foreground[1]
+
+    #move the rocks
+    for index in range(1, len(display_sprite)):
+        display_sprite[index].y += sprite_speed
+    
+        collision = game_engine.player.collisions(rocket, display_sprite, index)
+        if collision != None and enable_collisions == True:
+            game_over()
+            break       
 
 #initilise the start of the program
 reset_player()          
