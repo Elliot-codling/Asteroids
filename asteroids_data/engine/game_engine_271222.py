@@ -2,7 +2,7 @@
 #BY ELLIOT CODLING
 try:
     import pygame, time
-except:
+except ModuleNotFoundError:
     pass
 
 class music():
