@@ -1,11 +1,9 @@
 # Asteroids
-A newly updated version of the game Asteroids. This isn't the complete game as it is still being worked on.
-This means currently there is no start menu or volume control for the music.
-However, the gameplay is still there while just being over half the size of the origional code.
+A newly updated version of the game Asteroids.
+This version is ~100 lines shorter increasing the stability and overall FPS of the game. 
 
 CONTROLS:
 AD / Left and right arrow to control movement of spaceship
-F to reset the game once you have crashed
 
 Avoid the asteroids and try to get the top high score!
 
