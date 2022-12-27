@@ -1,13 +1,16 @@
 # Asteroids
-Little Game I made using Pygame, first time creating this.
-Using Ele_Engine 3.0
+A newly updated version of the game Asteroids.
+This version is ~100 lines shorter increasing the stability and overall FPS of the game. 
 
 CONTROLS:
 AD / Left and right arrow to control movement of spaceship
 
-Avoid the asteroids and don't crash
+Avoid the asteroids and try to get the top high score!
 
 REQUIREMENTS:
-- Needs an audio device else it will crash
 - Pygame
-- Python  3.4 or newer
+- Python 3.4 or newer
+- Hardware required is a Raspberry Pi 3B or above.
+
+Planned updates:
+- Animation capabilities
