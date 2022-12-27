@@ -1,16 +1,21 @@
 #main asteroids game
 #GAME CREATED BY ELLIOT CODLING
 import os
-from engine import game_engine_131222 as game_engine
+from engine import game_engine_271222 as game_engine
 from random import randint
 
 try:
     import pygame   #import pygame
 except ModuleNotFoundError:
-    game_engine.update.pygame_debug()
+    game_engine.window.pygame_debug()
 
 pygame.font.init()      #initilise the font
-pygame.mixer.init()         #initilise music
+try:
+    pygame.mixer.init()         #initilise music
+    activiate_music = True
+except:
+    game_engine.window.music_debug()            #if the audio driver hasn't been found
+    activiate_music = False
 
 file_dir = os.getcwd() # get the current directory
 
@@ -104,7 +109,8 @@ def main_menu():
     #main start menu
     elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "start_button", foreground):
         #delete everything the init main menu started and start the game
-        pygame.mixer.music.stop()
+        if activiate_music:             #dont allow sound control if there is no audio driver
+            pygame.mixer.music.stop()
         foreground = []
         for _ in range(len(text_foreground) - 1):
             del text_foreground[1]
@@ -118,6 +124,7 @@ def main_menu():
         init_options_menu()
     elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "exit_button", foreground):
         run = False
+
     #options menu
     elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "back_button", foreground):
         foreground = []
@@ -127,7 +134,8 @@ def main_menu():
     elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "volume_down_button", foreground):
         if volume > 0:
             volume -= 1
-        pygame.mixer.music.set_volume(volume / 10)
+        if activiate_music:         #dont allow sound control if there is no audio driver
+            pygame.mixer.music.set_volume(volume / 10)
         foreground = []
         for _ in range(len(text_foreground) - 1):
             del text_foreground[1]
@@ -135,7 +143,8 @@ def main_menu():
     elif game_engine.mouse.collision(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "volume_up_button", foreground):
         if volume < 10:
             volume += 1
-        pygame.mixer.music.set_volume(volume / 10)
+        if activiate_music:         #dont allow sound control if there is no audio driver
+            pygame.mixer.music.set_volume(volume / 10)
         foreground = []
         for _ in range(len(text_foreground) - 1):
             del text_foreground[1]
@@ -204,7 +213,8 @@ def game_over():
     #stop the game and update the screen to its default text
 
     run_game = False
-    game_engine.music.fade_out(volume / 10, 0, 0.1)
+    if activiate_music:     #dont allow sound control if there is no audio driver
+        game_engine.music.fade_out(volume / 10, 0, 0.1)
     init_main_menu()
     update(window, display, display_sprite, foreground, text_foreground, clock)
 
@@ -305,7 +315,8 @@ while run:
     if keys[pygame.K_BACKSPACE]:
         game_over()
 
-    play_music()
+    if activiate_music:
+        play_music()
     if run_game:
         gameplay()
        
