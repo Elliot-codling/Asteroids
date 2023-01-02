@@ -53,6 +53,8 @@ display_sprite = []
 foreground = []
 #text_foreground
 text_foreground = []
+score_text = game_engine.properties_text("score", "Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 20, 20, 30)
+text_foreground += [score_text]
 
 #main menu --------------------------------------------------------
 def delete_text():          #removes all of the invisable buttons and removed all of the text in index 1
@@ -171,12 +173,12 @@ def game_over():
     if score > high_score:
         high_score = score
     #reset everything
-    text_foreground = []
+    delete_text()
     display_sprite = []
     score, frames, frames_wait, sprite_speed = 0, 0, 145, 2
     reset_player()
     create_rocks()  
-    update_score()
+    text_foreground[0].texture = game_engine.properties_text.reload_text("Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 30)   #update the text_foreground
 
     #lost text
     lost = game_engine.properties_text("lost_text", "You lost!", "YELLOW", w, h, 100, True)
@@ -191,11 +193,6 @@ def game_over():
     game_engine.music.fade_out(volume / 10, 0, 0.1)
     init_main_menu()
     update(window, display, display_sprite, foreground, text_foreground, clock)
-
-def update_score():
-    global text_foreground
-    score_text = game_engine.properties_text("score", "Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 20, 20, 30)
-    text_foreground += [score_text]
 
 def play_music():
     if pygame.mixer.music.get_busy():
@@ -246,15 +243,13 @@ def gameplay():
     if display_sprite[len(display_sprite) - 1].y >= 700:
         del display_sprite[len(display_sprite) - 1]
         score += 0.25
-        #update the text_foreground
-        del text_foreground[0]
-        update_score()
+        text_foreground[0].texture = game_engine.properties_text.reload_text("Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 30)   #update the text_foreground
 
     #levels
     if score == 10:
         score += 5
-        del text_foreground[0]
-        update_score()
+        text_foreground[0].texture = game_engine.properties_text.reload_text("Score: {}    High score: {}".format(int(score), int(high_score)), "YELLOW", 30)       #update the score
+        #set new variables and configurations
         sprite_speed, frames_wait, frames = 4, 90, 0
         level_text = game_engine.properties_text("level", "2X Speed!", "YELLOW", w, h, 100, True)
         text_foreground += [level_text]
@@ -274,7 +269,6 @@ def gameplay():
 #initilise the start of the program
 reset_player()          
 create_rocks()  
-update_score()
 init_main_menu()
 while run:
     #keyboard and exit button, main code -----------------------------

@@ -49,17 +49,16 @@ class properties_object:            #this is to define the properties of a sprit
 #updates text
 class properties_text:          #this is to define properties of text
     def __init__(self, name, text, color, x, y, font_size, snapCentre = False):
-        self.name = name
+        self.name = name        #define all of the variables
         self.text = text
         
         self.font_size = font_size
-        self.color = color
+        self.color = color  
         self.snapCentre = snapCentre
         
-
         font = pygame.font.SysFont(None, font_size)
         texture = font.render(text, True, pygame.Color(color))
-        if snapCentre == True:
+        if snapCentre == True:          #can snap to the centre of the screen, x and y are turned into the width and height
             centre_coords = texture.get_rect(center=(x/2, y/2))
             self.x = centre_coords[0]
             self.y = centre_coords[1]
@@ -68,7 +67,12 @@ class properties_text:          #this is to define properties of text
             self.y = y
         self.texture = texture
 
-class mouse():
+    def reload_text(text, color, font_size):            #relaod the texture to text
+        font = pygame.font.SysFont(None, font_size)
+        texture = font.render(text, True, pygame.Color(color))
+        return texture
+
+class mouse():          #mouse capability
     def collision(mouseX, mouseY, boxName, foreground):
         #gets the mouse positions and checks to see if it hits a box with a given name
         #if yes then returns true
@@ -97,8 +101,7 @@ class mouse():
         else:
             return True
 
-
-#updates screen
+#interaction wit the screen
 class window:
     def music_debug():
         print("It seems like there is no Audio Driver installed on your device.")
@@ -155,7 +158,6 @@ class window:
         fps = int(clock.get_fps())
         print("FPS: {}".format(fps))
         pygame.time.delay(100)              #stop game for 0.1 seconds
-
 
     def define(name, w, h):             #define the window          
         window = pygame.display.set_mode((w, h))                #create window  
