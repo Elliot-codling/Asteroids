@@ -20,7 +20,7 @@ frames_wait = 145               # the amount of frames to wait until creating a 
 sprite_speed = 2                #speed of the rocks to travel towards the player
 score = 0               #current score
 high_score = 0              #current high score
-enable_collisions = False                #collsions
+enable_collisions = True                #collsions
 volume = 10             #volume of the game 
 performance_mode = False                #performance mode - disables all transparencies
 
