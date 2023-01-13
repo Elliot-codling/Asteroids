@@ -1,6 +1,6 @@
 #main asteroids game
 #GAME CREATED BY ELLIOT CODLING
-from engine import game_engine_50123 as game_engine
+from engine import game_engine_80123 as game_engine
 from random import randint; import os, pygame
 pygame.font.init()      #initilise the font
 file_dir = os.getcwd() # get the current directory
@@ -15,12 +15,12 @@ run = True              #main game loop - if false stops the program
 run_game = False                #runs the game - if false returns to the main menu
 clock = pygame.time.Clock()
 vel = 6             #speed of the player left and right
-frames = 0                  #the amount of frames passed - resets every time a new rock has been created
 frames_wait = 145               # the amount of frames to wait until creating a new set of rocks 
+wait = game_engine.frames + frames_wait                        #the future time of when the asteroids should be spawned in
 sprite_speed = 2                #speed of the rocks to travel towards the player
 score = 0               #current score
 high_score = 0              #current high score
-enable_collisions = True                #collsions
+enable_collisions = False                #collsions
 volume = 10             #volume of the game 
 performance_mode = False                #performance mode - disables all transparencies
 
@@ -49,6 +49,8 @@ for _ in range(11):
 
 #display_sprite
 display_sprite = []
+#spaceship animation
+playerAnimation = [pygame.image.load(f"{file_dir}/textures/spaceship.png"), pygame.image.load(f"{file_dir}/textures/spaceship_3.png"), pygame.image.load(f"{file_dir}/textures/spaceship_2.png")]
 #foreground
 foreground = []
 #text_foreground
@@ -169,13 +171,13 @@ def reset_player():                 #resets the player
 
 def game_over():                #set a new high score, reset all variables, tell the player that they lost before sending them back to the main menu
     global display_sprite, text_foreground
-    global run_game, score, high_score, frames, frames_wait, sprite_speed
+    global run_game, score, high_score, frames_wait, sprite_speed
     if score > high_score:
         high_score = score
     #reset everything
     delete_text()
     display_sprite = []
-    score, frames, frames_wait, sprite_speed = 0, 0, 145, 2
+    score, frames_wait, sprite_speed = 0, 145, 2
     reset_player()
     create_rocks()  
     text_foreground[0].texture = game_engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)   #update the text_foreground
@@ -208,14 +210,19 @@ def play_music():               #plays music depending if the code is in the mai
 #main code --------------------------------------------------------------------------------
 def gameplay():
     global display, display_sprite, text_foreground     #global lists used
-    global frames, frames_wait, score, high_score, sprite_speed   #global variables used
+    global wait, frames_wait, score, high_score, sprite_speed   #global variables used
+    #player movement
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         game_engine.player.left(rocket, vel, 10)
     elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         game_engine.player.right(rocket, vel, w - rocket.width - 10)
+
+    #player animation
+    game_engine.player.animate(rocket, playerAnimation, 10)
     
     #create scrolling background
     for image in display:
+        image.y += 1
         if display[0].y == 0:
             x = 0
             y = -60
@@ -230,14 +237,11 @@ def gameplay():
                 display.insert(index, (background_stars))
                 del display[66]
                 x += 80   
-        else:
-            image.y += 1
     
-    #create new rocks if the amount of frames passed == frames to wait for
-    frames += 1
-    if frames >= frames_wait:
+    #create new rocks if the amount of frames passed == future frame time
+    if game_engine.frames >= wait:
         create_rocks()
-        frames = 0
+        wait = game_engine.frames + frames_wait
     
     #delete the rocks that hit y coord 700
     if display_sprite[len(display_sprite) - 1].y >= 700:
@@ -250,7 +254,7 @@ def gameplay():
         score += 5
         text_foreground[0].texture = game_engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)       #update the score
         #set new variables and configurations
-        sprite_speed, frames_wait, frames = 4, 90, 0
+        sprite_speed, frames_wait, = 4, 90
         level_text = game_engine.properties_text("level", "2X Speed!", "YELLOW", w, h, 100, True)
         text_foreground += [level_text]
         update(window, display, display_sprite, foreground, text_foreground, clock)
@@ -265,6 +269,8 @@ def gameplay():
         if collision != None and enable_collisions == True:
             game_over()
             break       
+
+    game_engine.counter.update()            #update the frames passed
 
 #initilise the start of the program
 reset_player()          
