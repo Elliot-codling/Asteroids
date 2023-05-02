@@ -1,14 +1,9 @@
 #main asteroids game
-#GAME CREATED BY ELLIOT CODLING
-from engine import game_engine_80123 as game_engine
+from engine import game_engine_240123 as engine
 from random import randint; import os, pygame
 pygame.font.init()      #initilise the font
 file_dir = os.getcwd() # get the current directory
-activate_music = game_engine.activate_music
-
-#create window -------------------------------------------
-w, h = 480, 600
-window = game_engine.window.define("Asterods", w, h, pygame.SCALED, vsync=1)
+activate_music = engine.activate_music
 
 #variables
 run = True              #main game loop - if false stops the program
@@ -16,13 +11,18 @@ run_game = False                #runs the game - if false returns to the main me
 clock = pygame.time.Clock()
 vel = 6             #speed of the player left and right
 frames_wait = 145               # the amount of frames to wait until creating a new set of rocks 
-wait = game_engine.frames + frames_wait                        #the future time of when the asteroids should be spawned in
+wait = engine.frames + frames_wait                        #the future time of when the asteroids should be spawned in
 sprite_speed = 2                #speed of the rocks to travel towards the player
 score = 0               #current score
 high_score = 0              #current high score
-enable_collisions = False                #collsions
+enable_collisions = True                #collsions
 volume = 10             #volume of the game 
 performance_mode = False                #performance mode - disables all transparencies
+enable_vsync = True             #enables vsync
+
+#create window -------------------------------------------
+w, h = 480, 600
+window = engine.window("Asterods", w, h, (0, 0, 0), pygame.SCALED, enable_vsync)
 
 #load in textures - to always store them in ram
 global background_stars_texture, rock_texture
@@ -38,7 +38,7 @@ for _ in range(11):
         horizontal = randint(0, 1)
         vertical = randint(0, 0)
         
-        background_stars = game_engine.properties_object(f"background_stars_{x}{y}", background_stars_texture, x, y, 80, 60, False)
+        background_stars = engine.properties_object(f"background_stars_{x}{y}", background_stars_texture, x, y, 80, 60, False)
         #flip the background image
         background_stars.texture = pygame.transform.flip(background_stars.texture, horizontal, vertical)
         
@@ -55,7 +55,7 @@ playerAnimation = [pygame.image.load(f"{file_dir}/textures/spaceship.png"), pyga
 foreground = []
 #text_foreground
 text_foreground = []
-score_text = game_engine.properties_text("score", f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 20, 20, 30)
+score_text = engine.properties_text("score", f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 20, 20, 30)
 text_foreground += [score_text]
 
 #main menu --------------------------------------------------------
@@ -68,13 +68,13 @@ def delete_text():          #removes all of the invisable buttons and removed al
 def init_main_menu():               #creates all the text and all the invisable buttons
     global foreground, text_foreground
     #create text
-    start_text = game_engine.properties_text("start", "[ Start Game ]", "YELLOW", w, h, 45, True)
-    options_text = game_engine.properties_text("start", "[ Options ]", "YELLOW", w, h + 80, 45, True)
-    exit_text = game_engine.properties_text("start", "[ Exit Game ]", "YELLOW", w, h + 160, 45, True)
+    start_text = engine.properties_text("start", "[ Start Game ]", "YELLOW", w, h, 45, True)
+    options_text = engine.properties_text("start", "[ Options ]", "YELLOW", w, h + 80, 45, True)
+    exit_text = engine.properties_text("start", "[ Exit Game ]", "YELLOW", w, h + 160, 45, True)
     #create boxes that are invisable
-    start_button = game_engine.properties_object("start_button", f"{file_dir}/textures/invisable_button.png", start_text.x, start_text.y, start_text.texture.get_width(), start_text.texture.get_height(), not performance_mode)
-    options_button = game_engine.properties_object("options_button", f"{file_dir}/textures/invisable_button.png", options_text.x, options_text.y, options_text.texture.get_width(), options_text.texture.get_height(), not performance_mode)
-    exit_button = game_engine.properties_object("exit_button", f"{file_dir}/textures/invisable_button.png", exit_text.x, exit_text.y, exit_text.texture.get_width(), exit_text.texture.get_height(), not performance_mode)
+    start_button = engine.properties_object("start_button", f"{file_dir}/textures/invisable_button.png", start_text.x, start_text.y, start_text.texture.get_width(), start_text.texture.get_height(), not performance_mode)
+    options_button = engine.properties_object("options_button", f"{file_dir}/textures/invisable_button.png", options_text.x, options_text.y, options_text.texture.get_width(), options_text.texture.get_height(), not performance_mode)
+    exit_button = engine.properties_object("exit_button", f"{file_dir}/textures/invisable_button.png", exit_text.x, exit_text.y, exit_text.texture.get_width(), exit_text.texture.get_height(), not performance_mode)
     
     foreground += [start_button, options_button, exit_button]
     text_foreground += [start_text, options_text, exit_text]
@@ -82,56 +82,57 @@ def init_main_menu():               #creates all the text and all the invisable 
 def init_options_menu():            #creates all the text and all the invisable buttons
     global foreground, text_foreground
     #create text
-    back_text = game_engine.properties_text("start", "[ Back ]", "YELLOW", w, h, 45, True)
-    music_text = game_engine.properties_text("start", f"[ Music  level: {volume} ]", "YELLOW", w, h + 80, 45, True)
-    volume_down_text = game_engine.properties_text("start", "[ - ]", "YELLOW", w - 60, h + 160, 45, True)
-    volume_up_text = game_engine.properties_text("start", "[ + ]", "YELLOW", w + 60, h + 160, 45, True)
-    performance_text = game_engine.properties_text("performance_text", f"[ Performance mode: {performance_mode} ]", "YELLOW", w, h + 240, 45, True)
+    back_text = engine.properties_text("start", "[ Back ]", "YELLOW", w, h, 45, True)
+    music_text = engine.properties_text("start", f"[ Music  level: {volume} ]", "YELLOW", w, h + 80, 45, True)
+    volume_down_text = engine.properties_text("start", "[ - ]", "YELLOW", w - 60, h + 160, 45, True)
+    volume_up_text = engine.properties_text("start", "[ + ]", "YELLOW", w + 60, h + 160, 45, True)
+    performance_text = engine.properties_text("performance_text", f"[ Performance mode: {performance_mode} ]", "YELLOW", w, h + 240, 45, True)
+
     #create boxes that are invisable
-    back_button = game_engine.properties_object("back_button", f"{file_dir}/textures/invisable_button.png", back_text.x, back_text.y, back_text.texture.get_width(), back_text.texture.get_height(), not performance_mode)
-    volume_down_button = game_engine.properties_object("volume_down_button", f"{file_dir}/textures/invisable_button.png", volume_down_text.x, volume_down_text.y, volume_down_text.texture.get_width(), volume_down_text.texture.get_height(), not performance_mode)
-    volume_up_button = game_engine.properties_object("volume_up_button", f"{file_dir}/textures/invisable_button.png", volume_up_text.x, volume_up_text.y, volume_up_text.texture.get_width(), volume_up_text.texture.get_height(), not performance_mode)
-    performance_button = game_engine.properties_object("performance_button", f"{file_dir}/textures/invisable_button.png", performance_text.x, performance_text.y, performance_text.texture.get_width(), performance_text.texture.get_height(), not performance_mode)
-    
+    back_button = engine.properties_object("back_button", f"{file_dir}/textures/invisable_button.png", back_text.x, back_text.y, back_text.texture.get_width(), back_text.texture.get_height(), not performance_mode)
+    volume_down_button = engine.properties_object("volume_down_button", f"{file_dir}/textures/invisable_button.png", volume_down_text.x, volume_down_text.y, volume_down_text.texture.get_width(), volume_down_text.texture.get_height(), not performance_mode)
+    volume_up_button = engine.properties_object("volume_up_button", f"{file_dir}/textures/invisable_button.png", volume_up_text.x, volume_up_text.y, volume_up_text.texture.get_width(), volume_up_text.texture.get_height(), not performance_mode)
+    performance_button = engine.properties_object("performance_button", f"{file_dir}/textures/invisable_button.png", performance_text.x, performance_text.y, performance_text.texture.get_width(), performance_text.texture.get_height(), not performance_mode)
+
     foreground += [back_button, volume_down_button, volume_up_button, performance_button]
     text_foreground += [back_text, music_text, volume_down_text, volume_up_text, performance_text]
     
 def main_menu():            #pauses for 100ms to stop multiple clicks, main menu works by checking for mouse collisions with the invisable boxes created
     global display_sprite, foreground, text_foreground
-    global run_game, run, volume, performance_mode
+    global run_game, run, volume, performance_mode, enable_vsync
     pygame.time.delay(100)
     if not pygame.mouse.get_pressed()[0]:
         pass
     #main start menu
-    elif game_engine.mouse.collision("start_button", foreground):
+    elif engine.mouse.collision("start_button", foreground):
         #delete everything the init main menu started and start the game
-        game_engine.music.stop()
+        engine.music.stop()
         delete_text()
         run_game = True
-    elif game_engine.mouse.collision("options_button", foreground):
+    elif engine.mouse.collision("options_button", foreground):
         #delete everything the init main menu started
         delete_text()
         init_options_menu()
-    elif game_engine.mouse.collision("exit_button", foreground):
+    elif engine.mouse.collision("exit_button", foreground):
         run = False
 
     #options menu
-    elif game_engine.mouse.collision("back_button", foreground):
+    elif engine.mouse.collision("back_button", foreground):
         delete_text()
         init_main_menu()
-    elif game_engine.mouse.collision("volume_down_button", foreground):
+    elif engine.mouse.collision("volume_down_button", foreground):
         if volume > 0:
             volume -= 1
         pygame.mixer.music.set_volume(volume / 10)
         delete_text()
         init_options_menu()
-    elif game_engine.mouse.collision("volume_up_button", foreground):
+    elif engine.mouse.collision("volume_up_button", foreground):
         if volume < 10:
             volume += 1
         pygame.mixer.music.set_volume(volume / 10)
         delete_text()
         init_options_menu()    
-    elif game_engine.mouse.collision("performance_button", foreground):
+    elif engine.mouse.collision("performance_button", foreground):
         #flip the variable performance_mode and reset the screen
         performance_mode = not performance_mode
         delete_text()
@@ -151,7 +152,7 @@ def create_rocks():             #create a new set of rocks above the screen and 
         horizontal = randint(0, 1)
         vertical = randint(0, 0)
         
-        rock = game_engine.properties_object(f"rock_{x}{y}", rock_texture, x, y, 80, 80, not performance_mode)
+        rock = engine.properties_object(f"rock_{x}{y}", rock_texture, x, y, 80, 80, not performance_mode)
         #flip the background image
         rock.texture = pygame.transform.flip(rock.texture, horizontal, vertical)
         
@@ -162,11 +163,11 @@ def create_rocks():             #create a new set of rocks above the screen and 
     del display_sprite[del_rock]
 
 def update(window, display, display_sprite, foreground, text_foreground, clock):                #update to the screen
-    game_engine.window.update(window, display, display_sprite, foreground, text_foreground, clock, 0)
+    engine.window.update(window, display, display_sprite, foreground, text_foreground)
     
 def reset_player():                 #resets the player
     global display_sprite, rocket
-    rocket = game_engine.properties_object("rocket", f"{file_dir}/textures/spaceship.png", (w/2) - 51 / 2, 518, 45, 51, not performance_mode)
+    rocket = engine.properties_object("rocket", f"{file_dir}/textures/spaceship.png", (w/2) - 51 / 2, 518, 45, 51, not performance_mode)
     display_sprite += [rocket]
 
 def game_over():                #set a new high score, reset all variables, tell the player that they lost before sending them back to the main menu
@@ -179,11 +180,10 @@ def game_over():                #set a new high score, reset all variables, tell
     display_sprite = []
     score, frames_wait, sprite_speed = 0, 145, 2
     reset_player()
-    create_rocks()  
-    text_foreground[0].texture = game_engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)   #update the text_foreground
+    text_foreground[0].texture = engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)   #update the text_foreground
 
     #lost text
-    lost = game_engine.properties_text("lost_text", "You lost!", "YELLOW", w, h, 100, True)
+    lost = engine.properties_text("lost_text", "You lost!", "YELLOW", w, h, 100, True)
     text_foreground += [lost]
     update(window, display, display_sprite, foreground, text_foreground, clock)
     pygame.time.delay(1000)
@@ -192,7 +192,7 @@ def game_over():                #set a new high score, reset all variables, tell
     #stop the game and update the screen to its default text
 
     run_game = False
-    game_engine.music.fade_out(volume / 10, 0, 0.1)
+    engine.music.fade_out(volume / 10, 0, 0.1)
     init_main_menu()
     update(window, display, display_sprite, foreground, text_foreground, clock)
 
@@ -213,12 +213,12 @@ def gameplay():
     global wait, frames_wait, score, high_score, sprite_speed   #global variables used
     #player movement
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        game_engine.player.left(rocket, vel, 10)
+        engine.object.left(rocket, vel, 10)
     elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        game_engine.player.right(rocket, vel, w - rocket.width - 10)
+        engine.object.right(rocket, vel, w - rocket.width - 10)
 
     #player animation
-    game_engine.player.animate(rocket, playerAnimation, 10)
+    engine.object.animate(rocket, playerAnimation, 10)
     
     #create scrolling background
     for image in display:
@@ -230,7 +230,7 @@ def gameplay():
                 horizontal = randint(0, 1)
                 vertical = randint(0, 0)
                 
-                background_stars = game_engine.properties_object("background_star", background_stars_texture, x, y, 80, 60, performance_mode)
+                background_stars = engine.properties_object("background_star", background_stars_texture, x, y, 80, 60, performance_mode)
                 #flip the background image
                 background_stars.texture = pygame.transform.flip(background_stars.texture, horizontal, vertical)
                 
@@ -239,23 +239,23 @@ def gameplay():
                 x += 80   
     
     #create new rocks if the amount of frames passed == future frame time
-    if game_engine.frames >= wait:
+    if engine.frames >= wait:
         create_rocks()
-        wait = game_engine.frames + frames_wait
+        wait = engine.frames + frames_wait
     
     #delete the rocks that hit y coord 700
     if display_sprite[len(display_sprite) - 1].y >= 700:
         del display_sprite[len(display_sprite) - 1]
         score += 0.25
-        text_foreground[0].texture = game_engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)   #update the text_foreground
+        text_foreground[0].texture = engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)   #update the text_foreground
 
     #levels
     if score == 10:
         score += 5
-        text_foreground[0].texture = game_engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)       #update the score
+        text_foreground[0].texture = engine.properties_text.reload_text(f"Score: {int(score)}    High score: {int(high_score)}", "YELLOW", 30)       #update the score
         #set new variables and configurations
         sprite_speed, frames_wait, = 4, 90
-        level_text = game_engine.properties_text("level", "2X Speed!", "YELLOW", w, h, 100, True)
+        level_text = engine.properties_text("level", "2X Speed!", "YELLOW", w, h, 100, True)
         text_foreground += [level_text]
         update(window, display, display_sprite, foreground, text_foreground, clock)
         pygame.time.delay(2000)
@@ -265,12 +265,11 @@ def gameplay():
     for index in range(1, len(display_sprite)):
         display_sprite[index].y += sprite_speed
     
-        collision = game_engine.player.collisions(rocket, display_sprite, index)
-        if collision != None and enable_collisions == True:
-            game_over()
-            break       
+    #check for collisions
+    if engine.object.collision_mask(rocket, display_sprite) and enable_collisions:
+        game_over()
 
-    game_engine.counter.update()            #update the frames passed
+    engine.counter.update()            #update the frames passed
 
 #initilise the start of the program
 reset_player()          
@@ -294,8 +293,7 @@ while run:
         gameplay()
     else:
         main_menu() 
-
+    
     update(window, display, display_sprite, foreground, text_foreground, clock)
     clock.tick(60)   
-
 pygame.quit()
