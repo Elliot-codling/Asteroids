@@ -127,10 +127,8 @@ class window:
     #window is now an object and can add properties to the window
     def __init__(self, name, w, h, color = (0, 0, 0), flags = 0, vsync = False):
         if vsync:    #create window
-            print("Vsync enabled.")
             self.surface = pygame.display.set_mode((w, h), flags | pygame.SCALED, vsync)            
         else:
-            print("Vsync disabled.")
             self.surface = pygame.display.set_mode((w, h), flags)
         self.color = color      
         pygame.display.set_caption(name)                        #create name
