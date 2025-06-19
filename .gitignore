@@ -1,2 +1,15 @@
-#Dont save pycache
-__pycache__/
+#Ignore every file - including pycache files
+/*
+__pycache__*
+
+#Except these files
+!README.md
+!__main__.py
+!.gitignore
+!LICENSE
+
+
+#Except these folders
+!core/
+!src/
+!assets/

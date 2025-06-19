@@ -1,0 +1,15 @@
+# Starts the program if python3 ./GameTemplate is called
+def main():
+    # Create runtime
+    from src import runtime as engine
+    runtimeWindow = engine.runtime("Asteroids", 480, 600)
+
+    # Call the update function
+    runtimeWindow.update()
+
+    # Call the end function
+    runtimeWindow.end()
+
+# Run if the file name is __main__
+if __name__ == "__main__":
+    main()
