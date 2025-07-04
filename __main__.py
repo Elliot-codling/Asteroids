@@ -1,8 +1,8 @@
 # Starts the program if python3 ./GameTemplate is called
 def main():
     # Create runtime
-    from src import runtime as engine
-    runtimeWindow = engine.runtime("Asteroids", 480, 600)
+    from src import runtime as system
+    runtimeWindow = system.runtime("Asteroids", 480, 600, (0, 0, 0), ["SCALED"], True)
 
     # Call the update function
     runtimeWindow.update()

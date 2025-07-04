@@ -3,12 +3,12 @@
 
 class runtime:
     # === Create runtime and define the window using parameters provided ===
-    def __init__(self, name: str, width: int, height: int, color = (0, 0, 0)) -> "runtime":
-        import core as engine
+    def __init__(self, name: str, width: int, height: int, color = (0, 0, 0), flags = [], vsync = False) -> "runtime":
+        import core as system
         import pygame
 
         self.m_clock = pygame.time.Clock()
-        self.m_window = engine.window(name, width, height, self.m_clock, color)
+        self.m_window = system.window(name, width, height, self.m_clock, color, flags, vsync)
         
         
         self.m_timeElapsed = 0
@@ -32,7 +32,6 @@ class runtime:
                 pass
             
             # If the frametime is over 16ms then run fixedUpdate
-            # TODO: Fixed runtime so that it can run twice if the frame goes over 16.666ms
             while self.m_timeElapsed >= 0:
                 deltaTime = self.m_timeElapsed / self.m_fixedTime
                 fixedUpdate(self.m_window, deltaTime)
